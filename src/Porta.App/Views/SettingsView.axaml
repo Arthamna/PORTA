@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             x:Class="Porta.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+  <ScrollViewer>
+    <StackPanel Margin="28,24" Spacing="16" MaxWidth="760" HorizontalAlignment="Left">
+
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="h2" Text="Tampilan" />
+          <DockPanel>
+            <ToggleSwitch DockPanel.Dock="Right" IsChecked="{Binding Theme.IsDark}" OnContent="Dark Mode" OffContent="Light Mode" />
+            <StackPanel>
+              <TextBlock Text="Tema Aplikasi" FontWeight="Medium" />
+              <TextBlock Classes="muted" Text="Ganti antara Dark Mode dan Light Mode di seluruh komponen." />
+            </StackPanel>
+          </DockPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="h2" Text="Profil Pengguna" />
+          <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto,Auto" >
+            <TextBlock Grid.Row="0" Classes="muted" Text="Nama Lengkap" Margin="0,4" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding FullName}" FontWeight="SemiBold" Margin="0,4" />
+            <TextBlock Grid.Row="1" Classes="muted" Text="Username" Margin="0,4" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Username}" Margin="0,4" />
+            <TextBlock Grid.Row="2" Classes="muted" Text="Peran" Margin="0,4" />
+            <Border Grid.Row="2" Grid.Column="1" Classes="badge" Background="{StaticResource PrimaryBrush}" Margin="0,4">
+              <TextBlock Text="{Binding Role}" />
+            </Border>
+            <TextBlock Grid.Row="3" Classes="muted" Text="Hak Akses" Margin="0,4" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding AccessDescription}" TextWrapping="Wrap" Margin="0,4" />
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="h2" Text="Status Koneksi Database" />
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Ellipse Width="12" Height="12" Fill="{StaticResource ProfitBrush}" IsVisible="{Binding IsDatabaseOk}" VerticalAlignment="Center" />
+            <Ellipse Width="12" Height="12" Fill="{StaticResource LossBrush}" IsVisible="{Binding !IsDatabaseOk}" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding DatabaseStatus}" TextWrapping="Wrap" MaxWidth="600" VerticalAlignment="Center" />
+          </StackPanel>
+          <Button Content="Tes Koneksi" Command="{Binding TestConnectionCommand}" HorizontalAlignment="Left" />
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card">
+        <DockPanel>
+          <Button DockPanel.Dock="Right" Classes="danger" Content="Logout" Command="{Binding LogoutCommand}" />
+          <StackPanel>
+            <TextBlock Text="Sesi" FontWeight="Medium" />
+            <TextBlock Classes="muted" Text="Keluar dan bersihkan sesi pengguna saat ini." />
+          </StackPanel>
+        </DockPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             x:Class="Porta.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+  <Grid ColumnDefinitions="*,*">
+    <!-- Brand panel -->
+    <Border Grid.Column="0" Background="{DynamicResource SidebarBg}" Padding="64">
+      <StackPanel VerticalAlignment="Center" Spacing="18" MaxWidth="460">
+        <StackPanel Orientation="Horizontal" Spacing="14">
+          <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource PrimaryBrush}">
+            <TextBlock Text="P" Foreground="White" FontSize="30" FontWeight="Bold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <TextBlock Text="PORTA" Foreground="White" FontSize="42" FontWeight="Bold" VerticalAlignment="Center" />
+        </StackPanel>
+        <TextBlock Text="Sistem Informasi Manajemen Portofolio Multi-Aset &amp; Jurnal Investasi"
+                   Foreground="#E2E8F0" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <TextBlock Foreground="#94A3B8" FontSize="14" TextWrapping="Wrap" LineHeight="22"
+                   Text="Konsolidasikan Saham, Kripto, Reksa Dana/Obligasi, Emas, dan Kas dalam satu tempat. Hitung Average Price dan P&amp;L otomatis, pantau alokasi &amp; rebalancing, dan catat tesis serta psikologi setiap keputusan investasi." />
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+          <Border Classes="badge" Background="{StaticResource ProfitBrush}"><TextBlock Text="Profit" /></Border>
+          <Border Classes="badge" Background="{StaticResource LossBrush}"><TextBlock Text="Loss" /></Border>
+          <Border Classes="badge" Background="{StaticResource WarningBrush}"><TextBlock Text="Rebalancing" /></Border>
+          <Border Classes="badge" Background="{StaticResource PrimaryBrush}"><TextBlock Text="Jurnal" /></Border>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <!-- Login form -->
+    <Grid Grid.Column="1">
+      <Border Classes="card" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="32">
+        <StackPanel Spacing="16">
+          <StackPanel Spacing="4">
+            <TextBlock Classes="h1" Text="Masuk ke PORTA" />
+            <TextBlock Classes="muted" Text="Gunakan akun terdaftar untuk melanjutkan." />
+          </StackPanel>
+
+          <StackPanel>
+            <TextBlock Classes="label" Text="Username" />
+            <TextBox Text="{Binding Username}" Watermark="contoh: investor" />
+          </StackPanel>
+          <StackPanel>
+            <TextBlock Classes="label" Text="Password" />
+            <TextBox Text="{Binding Password}" PasswordChar="●" Watermark="••••••••">
+              <TextBox.KeyBindings>
+                <KeyBinding Gesture="Enter" Command="{Binding LoginCommand}" />
+              </TextBox.KeyBindings>
+            </TextBox>
+          </StackPanel>
+
+          <Border Classes="inlineError" IsVisible="{Binding HasError}">
+            <TextBlock Classes="error" Text="{Binding ErrorMessage}" />
+          </Border>
+
+          <Button Classes="primary" Content="Masuk" Command="{Binding LoginCommand}" IsDefault="True"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,11" />
+
+          <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+
+          <!-- Database status -->
+          <Border Classes="inlineWarn" IsVisible="{Binding HasDatabaseError}">
+            <StackPanel Spacing="8">
+              <TextBlock Text="Database tidak tersedia" FontWeight="SemiBold" Foreground="{StaticResource WarningBrush}" />
+              <TextBlock Text="{Binding DatabaseError}" TextWrapping="Wrap" FontSize="12" />
+              <Button Content="Coba Lagi" Command="{Binding CheckDatabaseCommand}" HorizontalAlignment="Left" />
+            </StackPanel>
+          </Border>
+
+          <Border Background="{DynamicResource SurfaceAltBrush}" CornerRadius="8" Padding="12,10">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="muted" FontWeight="SemiBold" Text="Akun demo" />
+              <TextBlock Classes="muted" Text="investor / investor123  — Investor (akses penuh)" />
+              <TextBlock Classes="muted" Text="reviewer / reviewer123  — Reviewer (read-only)" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

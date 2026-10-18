@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             x:Class="Porta.Views.UpdatePriceView"
+             x:DataType="vm:UpdatePriceDialogViewModel"
+             Width="420">
+  <StackPanel Margin="24" Spacing="14">
+    <StackPanel Spacing="2">
+      <TextBlock Classes="h2" Text="{Binding DialogTitle}" />
+      <TextBlock Classes="muted" Text="{Binding AssetName}" />
+    </StackPanel>
+
+    <Border Background="{DynamicResource SurfaceAltBrush}" CornerRadius="8" Padding="12,10">
+      <StackPanel Spacing="2">
+        <TextBlock Classes="muted">
+          <Run Text="Harga saat ini:" />
+          <Run Text="{Binding CurrentPriceText}" FontWeight="SemiBold" />
+        </TextBlock>
+        <TextBlock Classes="muted">
+          <Run Text="Terakhir diperbarui:" />
+          <Run Text="{Binding LastUpdatedText}" />
+        </TextBlock>
+      </StackPanel>
+    </Border>
+
+    <StackPanel>
+      <TextBlock Classes="label" Text="Harga Pasar Baru (Rp) *" />
+      <TextBox Text="{Binding PriceText}" HorizontalContentAlignment="Right" />
+    </StackPanel>
+
+    <Border Classes="inlineError" IsVisible="{Binding HasError}">
+      <TextBlock Classes="error" Text="{Binding ErrorMessage}" />
+    </Border>
+
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button Content="Batal" Command="{Binding CancelCommand}" IsCancel="True" />
+      <Button Classes="primary" Content="Update Harga" Command="{Binding SaveCommand}" IsDefault="True" />
+    </StackPanel>
+  </StackPanel>
+</UserControl>

@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             x:Class="Porta.Views.CategoryFormView"
+             x:DataType="vm:CategoryFormViewModel"
+             Width="480">
+  <StackPanel Margin="24" Spacing="14">
+    <TextBlock Classes="h2" Text="{Binding DialogTitle}" />
+
+    <StackPanel>
+      <TextBlock Classes="label" Text="Nama Kategori *" />
+      <TextBox Text="{Binding CategoryName}" Watermark="contoh: Obligasi" MaxLength="50" />
+    </StackPanel>
+
+    <Grid ColumnDefinitions="*,12,*">
+      <StackPanel Grid.Column="0">
+        <TextBlock Classes="label" Text="Target Alokasi (%)" />
+        <TextBox Text="{Binding TargetText}" HorizontalContentAlignment="Right" />
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Classes="label" Text="Tingkat Risiko" />
+        <ComboBox ItemsSource="{Binding RiskLevels}" SelectedItem="{Binding RiskLevel}" />
+      </StackPanel>
+    </Grid>
+
+    <StackPanel>
+      <TextBlock Classes="label" Text="Deskripsi" />
+      <TextBox Text="{Binding Description}" MaxLength="255" />
+    </StackPanel>
+
+    <TextBlock Classes="muted" TextWrapping="Wrap"
+               Text="Total target seluruh kategori divalidasi = 100% saat menyimpan target di halaman Kategori &amp; Rebalancing." />
+
+    <Border Classes="inlineError" IsVisible="{Binding HasError}">
+      <TextBlock Classes="error" Text="{Binding ErrorMessage}" />
+    </Border>
+
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button Content="Batal" Command="{Binding CancelCommand}" IsCancel="True" />
+      <Button Classes="primary" Content="Simpan" Command="{Binding SaveCommand}" IsDefault="True" />
+    </StackPanel>
+  </StackPanel>
+</UserControl>

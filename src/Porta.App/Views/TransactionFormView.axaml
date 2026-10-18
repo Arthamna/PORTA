@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             x:Class="Porta.Views.TransactionFormView"
+             x:DataType="vm:TransactionFormViewModel"
+             Width="720">
+  <DockPanel>
+    <!-- Buttons -->
+    <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="24,14">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+          <Button Content="Batal" Command="{Binding CancelCommand}" IsCancel="True" />
+          <Button Classes="primary" Content="Simpan Transaksi" Command="{Binding SaveCommand}" />
+        </StackPanel>
+        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Width="120" HorizontalAlignment="Left" />
+      </DockPanel>
+    </Border>
+
+    <ScrollViewer>
+      <StackPanel Margin="24" Spacing="14">
+        <TextBlock Classes="h2" Text="{Binding DialogTitle}" />
+
+        <!-- Transaction section -->
+        <Grid ColumnDefinitions="2*,12,*,12,*">
+          <StackPanel Grid.Column="0">
+            <TextBlock Classes="label" Text="Aset *" />
+            <ComboBox ItemsSource="{Binding Assets}" SelectedItem="{Binding SelectedAsset}" />
+          </StackPanel>
+          <StackPanel Grid.Column="2">
+            <TextBlock Classes="label" Text="Tipe Transaksi *" />
+            <ComboBox ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType}" />
+          </StackPanel>
+          <StackPanel Grid.Column="4">
+            <TextBlock Classes="label" Text="Tanggal *" />
+            <CalendarDatePicker SelectedDate="{Binding Date}" />
+          </StackPanel>
+        </Grid>
+
+        <TextBlock Classes="muted" Text="{Binding HoldingInfo}" TextWrapping="Wrap" />
+
+        <Grid ColumnDefinitions="*,12,*,12,*">
+          <StackPanel Grid.Column="0">
+            <TextBlock Classes="label" Text="{Binding UnitsLabel}" />
+            <TextBox Text="{Binding UnitsText}" Watermark="contoh: 100 atau 0,025" HorizontalContentAlignment="Right" />
+          </StackPanel>
+          <StackPanel Grid.Column="2">
+            <TextBlock Classes="label" Text="{Binding PriceLabel}" />
+            <TextBox Text="{Binding PriceText}" Watermark="contoh: 9800" HorizontalContentAlignment="Right" />
+          </StackPanel>
+          <StackPanel Grid.Column="4">
+            <TextBlock Classes="label" Text="Biaya Transaksi / Fee (Rp)" />
+            <TextBox Text="{Binding FeeText}" HorizontalContentAlignment="Right" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Live calculation preview -->
+        <Border Background="{DynamicResource SurfaceAltBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"
+                CornerRadius="8" Padding="14,10">
+          <StackPanel Spacing="4">
+            <TextBlock>
+              <Run Text="Total nilai transaksi:" Foreground="{DynamicResource TextSecondary}" />
+              <Run Text="{Binding TotalPreview}" FontWeight="Bold" />
+            </TextBlock>
+            <TextBlock Text="{Binding ResultPreview}" FontSize="12" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Classes="inlineWarn" IsVisible="{Binding HasInlineWarning}">
+          <TextBlock Text="{Binding InlineWarning}" TextWrapping="Wrap" Foreground="{StaticResource WarningBrush}" FontWeight="SemiBold" />
+        </Border>
+
+        <!-- Journal section (FR-11) -->
+        <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,0">
+          <StackPanel Spacing="12">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="h2" Text="Jurnal Investasi" />
+              <TextBlock Classes="muted" Text="Opsional — dokumentasikan tesis, rencana manajemen risiko, dan kondisi emosi Anda." />
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="label" Text="Tesis / Alasan Transaksi" />
+              <TextBox Text="{Binding ThesisNote}" AcceptsReturn="True" TextWrapping="Wrap" Height="80"
+                       Watermark="contoh: Fundamental kuat, valuasi wajar setelah koreksi..." />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="*,12,*">
+              <StackPanel Grid.Column="0">
+                <TextBlock Classes="label" Text="Target Price / Take Profit (Rp)" />
+                <TextBox Text="{Binding TargetPriceText}" HorizontalContentAlignment="Right" />
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Classes="label" Text="Stop Loss (Rp)" />
+                <TextBox Text="{Binding StopLossText}" HorizontalContentAlignment="Right" />
+              </StackPanel>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,12,*">
+              <StackPanel Grid.Column="0">
+                <TextBlock Classes="label" Text="Tag Emosi" />
+                <Grid ColumnDefinitions="*,Auto">
+                  <ComboBox ItemsSource="{Binding EmotionOptions}" SelectedItem="{Binding EmotionTag}" PlaceholderText="Pilih tag emosi" />
+                  <Button Grid.Column="1" Content="×" Command="{Binding ClearEmotionCommand}" Margin="6,0,0,0" Padding="10,6" />
+                </Grid>
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Classes="label" Text="Strategi" />
+                <TextBox Text="{Binding StrategyTag}" Watermark="contoh: Value Investing, DCA" MaxLength="50" />
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <Border Classes="inlineError" IsVisible="{Binding HasError}">
+          <TextBlock Classes="error" Text="{Binding ErrorMessage}" />
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

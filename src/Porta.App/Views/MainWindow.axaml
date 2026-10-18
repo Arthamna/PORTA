@@ -1,0 +1,130 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Porta.ViewModels"
+        xmlns:v="using:Porta.Views"
+        xmlns:svc="using:Porta.Services"
+        x:Class="Porta.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="PORTA — Portfolio &amp; Multi-Asset Investment Journal"
+        Width="1380" Height="880" MinWidth="1100" MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBg}">
+
+  <Panel>
+    <!-- ============ Login gate ============ -->
+    <Panel IsVisible="{Binding !IsLoggedIn}">
+      <v:LoginView DataContext="{Binding Login}" />
+    </Panel>
+
+    <!-- ============ Application shell ============ -->
+    <Grid ColumnDefinitions="248,*" IsVisible="{Binding IsLoggedIn}">
+
+      <!-- Sidebar -->
+      <Border Grid.Column="0" Background="{DynamicResource SidebarBg}" Padding="16,20">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Spacing="2" Margin="8,0,8,28">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Width="34" Height="34" CornerRadius="9" Background="{StaticResource PrimaryBrush}">
+                <TextBlock Text="P" Foreground="White" FontWeight="Bold" FontSize="18"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <TextBlock Text="PORTA" Foreground="White" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Text="Multi-Asset Portfolio &amp; Journal" Foreground="#94A3B8" FontSize="11" Margin="0,6,0,0" />
+          </StackPanel>
+
+          <!-- User card -->
+          <Border DockPanel.Dock="Bottom" Background="{DynamicResource SidebarHover}" CornerRadius="10" Padding="12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <Border Width="36" Height="36" CornerRadius="18" Background="{StaticResource PrimaryBrush}">
+                <TextBlock Text="{Binding UserInitial}" Foreground="White" FontWeight="Bold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <StackPanel Grid.Column="1" Margin="10,0" VerticalAlignment="Center">
+                <TextBlock Text="{Binding UserFullName}" Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding UserRole}" Foreground="#94A3B8" FontSize="11" />
+              </StackPanel>
+              <Button Grid.Column="2" Content="Logout" Command="{Binding LogoutCommand}" FontSize="11"
+                      Padding="8,4" Background="Transparent" Foreground="#F87171" BorderBrush="#7F1D1D" BorderThickness="1" />
+            </Grid>
+          </Border>
+
+          <ListBox Classes="nav" ItemsSource="{Binding NavItems}" SelectedItem="{Binding SelectedNav}">
+            <ListBox.ItemTemplate>
+              <DataTemplate DataType="vm:NavItem">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                  <PathIcon Data="{Binding Icon}" Width="17" Height="17" />
+                  <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="Medium" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+      </Border>
+
+      <!-- Main area -->
+      <Grid Grid.Column="1" RowDefinitions="Auto,*">
+        <!-- Header bar -->
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource LineBrush}"
+                BorderThickness="0,0,0,1" Padding="28,14">
+          <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="22" VerticalAlignment="Center">
+              <Border Classes="badge" Background="{StaticResource WarningBrush}" IsVisible="{Binding IsReviewer}">
+                <TextBlock Text="MODE BACA SAJA (REVIEWER)" />
+              </Border>
+              <StackPanel Spacing="1">
+                <TextBlock Classes="muted" Text="Total Net Worth" />
+                <TextBlock Text="{Binding HeaderNetWorth}" FontWeight="Bold" FontSize="15" />
+              </StackPanel>
+              <StackPanel Spacing="1">
+                <TextBlock Classes="muted" Text="Unrealized P&amp;L" />
+                <TextBlock Text="{Binding HeaderPnL}" FontWeight="Bold" FontSize="15"
+                           Foreground="{Binding HeaderPnLValue, Converter={StaticResource PnLBrush}}" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <TextBlock Classes="muted" Text="Tema" VerticalAlignment="Center" />
+                <ToggleSwitch IsChecked="{Binding Theme.IsDark}" OnContent="Dark" OffContent="Light" />
+              </StackPanel>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Classes="h1" Text="{Binding CurrentPage.Title, FallbackValue=''}" />
+              <TextBlock Classes="muted" Text="{Binding TodayText}" />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+
+        <!-- Dynamic content -->
+        <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+      </Grid>
+    </Grid>
+
+    <!-- ============ Modal dialog overlay ============ -->
+    <Border Background="{DynamicResource OverlayBrush}"
+            IsVisible="{Binding Dialogs.CurrentDialog, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <Border Classes="card" HorizontalAlignment="Center" VerticalAlignment="Center"
+              MaxWidth="760" MaxHeight="820" Padding="0" BoxShadow="0 20 50 0 #40000000">
+        <ContentControl Content="{Binding Dialogs.CurrentDialog}" />
+      </Border>
+    </Border>
+
+    <!-- ============ Toast notifications ============ -->
+    <ItemsControl ItemsSource="{Binding Notifications.Toasts}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                  Margin="0,80,24,0" Width="380">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="svc:Toast">
+          <Border Background="{Binding Kind, Converter={StaticResource ToastBrush}}" CornerRadius="10"
+                  Padding="14,12" Margin="0,0,0,8" BoxShadow="0 8 24 0 #33000000">
+            <Grid ColumnDefinitions="Auto,*">
+              <Border Width="22" Height="22" CornerRadius="11" Background="#33FFFFFF" VerticalAlignment="Top">
+                <TextBlock Text="{Binding Icon}" Foreground="White" FontWeight="Bold" FontSize="12"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+              </Border>
+              <TextBlock Grid.Column="1" Text="{Binding Message}" Foreground="White" TextWrapping="Wrap"
+                         Margin="10,2,0,0" FontWeight="Medium" />
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Panel>
+</Window>

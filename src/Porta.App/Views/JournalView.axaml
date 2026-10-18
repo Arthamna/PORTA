@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             xmlns:m="using:Porta.Models"
+             x:Class="Porta.Views.JournalView"
+             x:DataType="vm:JournalViewModel">
+  <DockPanel Margin="28,24">
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="220,12,220,*,Auto" Margin="0,0,0,12">
+      <StackPanel Grid.Column="0">
+        <TextBlock Classes="label" Text="Tag Emosi" />
+        <ComboBox ItemsSource="{Binding EmotionOptions}" SelectedItem="{Binding SelectedEmotion}" />
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Classes="label" Text="Aset" />
+        <ComboBox ItemsSource="{Binding AssetOptions}" SelectedItem="{Binding SelectedAsset}" />
+      </StackPanel>
+      <Button Grid.Column="4" Content="Muat Ulang" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom" />
+    </Grid>
+
+    <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceAltBrush}" BorderBrush="{DynamicResource LineBrush}"
+            BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,16">
+      <TextBlock Text="{Binding DisciplineSummary}" FontWeight="Medium" />
+    </Border>
+
+    <Panel>
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Entries}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="2" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="m:JournalViewDto">
+              <Border Classes="card" Margin="0,0,16,16">
+                <StackPanel Spacing="12">
+                  <DockPanel>
+                    <TextBlock DockPanel.Dock="Right" Classes="muted" VerticalAlignment="Center"
+                               Text="{Binding TransactionDate, Converter={StaticResource Date}}" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <TextBlock Text="{Binding TickerSymbol}" FontSize="17" FontWeight="Bold" VerticalAlignment="Center" />
+                      <Border Classes="badge" Background="{Binding TransactionType, Converter={StaticResource TxTypeBrush}}">
+                        <TextBlock Text="{Binding TransactionType}" />
+                      </Border>
+                    </StackPanel>
+                  </DockPanel>
+
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Border Classes="badge" Background="{Binding EmotionTag, Converter={StaticResource EmotionBrush}}"
+                            IsVisible="{Binding EmotionTag, Converter={x:Static ObjectConverters.IsNotNull}}">
+                      <TextBlock Text="{Binding EmotionTag}" />
+                    </Border>
+                    <Border Classes="badge subtle"
+                            IsVisible="{Binding StrategyTag, Converter={x:Static ObjectConverters.IsNotNull}}">
+                      <TextBlock Text="{Binding StrategyTag}" />
+                    </Border>
+                  </StackPanel>
+
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="label" Text="TESIS / ALASAN" />
+                    <TextBlock Text="{Binding ThesisNote, FallbackValue='—', TargetNullValue='—'}" TextWrapping="Wrap" />
+                  </StackPanel>
+
+                  <Grid ColumnDefinitions="*,*,*,*">
+                    <StackPanel Grid.Column="0">
+                      <TextBlock Classes="muted" Text="Harga Entry" />
+                      <TextBlock FontWeight="SemiBold" Text="{Binding EntryPrice, Converter={StaticResource Money}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Classes="muted" Text="Target (TP)" />
+                      <TextBlock FontWeight="SemiBold" Foreground="{StaticResource ProfitBrush}"
+                                 Text="{Binding TargetPrice, Converter={StaticResource Money}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                      <TextBlock Classes="muted" Text="Stop Loss" />
+                      <TextBlock FontWeight="SemiBold" Foreground="{StaticResource LossBrush}"
+                                 Text="{Binding StopLossPrice, Converter={StaticResource Money}}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="3">
+                      <TextBlock Classes="muted" Text="Harga Kini" />
+                      <TextBlock FontWeight="SemiBold" Text="{Binding CurrentMarketPrice, Converter={StaticResource Money}}" />
+                      <TextBlock FontSize="11" Text="{Binding PriceChangePercentage, Converter={StaticResource Percent}, ConverterParameter=signed}"
+                                 Foreground="{Binding PriceChangePercentage, Converter={StaticResource PnLBrush}}" />
+                    </StackPanel>
+                  </Grid>
+
+                  <Border Background="{DynamicResource SurfaceAltBrush}" CornerRadius="6" Padding="10,6">
+                    <TextBlock FontSize="12">
+                      <Run Text="Rencana vs Realisasi:" Foreground="{DynamicResource TextSecondary}" />
+                      <Run Text="{Binding PlanStatus}" FontWeight="SemiBold" />
+                    </TextBlock>
+                  </Border>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+
+      <StackPanel IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+        <TextBlock Classes="h2" Text="Belum ada jurnal" HorizontalAlignment="Center" />
+        <TextBlock Classes="muted" Text="Isi bagian Jurnal Investasi saat mencatat transaksi baru." HorizontalAlignment="Center" />
+      </StackPanel>
+      <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" VerticalAlignment="Top" Height="3" MinHeight="3" />
+    </Panel>
+  </DockPanel>
+</UserControl>

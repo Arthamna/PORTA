@@ -1,0 +1,81 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             xmlns:v="using:Porta.Views"
+             xmlns:conv="using:Porta.Converters"
+             x:Class="Porta.App"
+             RequestedThemeVariant="Light">
+
+  <Application.DataTemplates>
+    <!-- Pages -->
+    <DataTemplate DataType="vm:DashboardViewModel"><v:DashboardView /></DataTemplate>
+    <DataTemplate DataType="vm:HoldingsViewModel"><v:HoldingsView /></DataTemplate>
+    <DataTemplate DataType="vm:TransactionsViewModel"><v:TransactionsView /></DataTemplate>
+    <DataTemplate DataType="vm:JournalViewModel"><v:JournalView /></DataTemplate>
+    <DataTemplate DataType="vm:AllocationViewModel"><v:AllocationView /></DataTemplate>
+    <DataTemplate DataType="vm:SettingsViewModel"><v:SettingsView /></DataTemplate>
+    <!-- Dialogs -->
+    <DataTemplate DataType="vm:ConfirmDialogViewModel"><v:ConfirmDialogView /></DataTemplate>
+    <DataTemplate DataType="vm:AssetFormViewModel"><v:AssetFormView /></DataTemplate>
+    <DataTemplate DataType="vm:UpdatePriceDialogViewModel"><v:UpdatePriceView /></DataTemplate>
+    <DataTemplate DataType="vm:TransactionFormViewModel"><v:TransactionFormView /></DataTemplate>
+    <DataTemplate DataType="vm:CategoryFormViewModel"><v:CategoryFormView /></DataTemplate>
+  </Application.DataTemplates>
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <!-- PRD section 10: semantic palette, Light Mode -->
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="AppBg" Color="#F1F5F9" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="SurfaceAltBrush" Color="#F8FAFC" />
+          <SolidColorBrush x:Key="LineBrush" Color="#E2E8F0" />
+          <SolidColorBrush x:Key="TextPrimary" Color="#0F172A" />
+          <SolidColorBrush x:Key="TextSecondary" Color="#64748B" />
+          <SolidColorBrush x:Key="TrackBrush" Color="#E2E8F0" />
+          <SolidColorBrush x:Key="OverlayBrush" Color="#990F172A" />
+          <SolidColorBrush x:Key="SidebarBg" Color="#0F172A" />
+          <SolidColorBrush x:Key="SidebarHover" Color="#1E293B" />
+        </ResourceDictionary>
+        <!-- Dark Mode -->
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="AppBg" Color="#0B1120" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#1E293B" />
+          <SolidColorBrush x:Key="SurfaceAltBrush" Color="#172033" />
+          <SolidColorBrush x:Key="LineBrush" Color="#334155" />
+          <SolidColorBrush x:Key="TextPrimary" Color="#F1F5F9" />
+          <SolidColorBrush x:Key="TextSecondary" Color="#94A3B8" />
+          <SolidColorBrush x:Key="TrackBrush" Color="#334155" />
+          <SolidColorBrush x:Key="OverlayBrush" Color="#CC020617" />
+          <SolidColorBrush x:Key="SidebarBg" Color="#020617" />
+          <SolidColorBrush x:Key="SidebarHover" Color="#1E293B" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+
+      <SolidColorBrush x:Key="PrimaryBrush" Color="#2563EB" />
+      <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#1D4ED8" />
+      <SolidColorBrush x:Key="ProfitBrush" Color="#10B981" />
+      <SolidColorBrush x:Key="LossBrush" Color="#F43F5E" />
+      <SolidColorBrush x:Key="LossHoverBrush" Color="#E11D48" />
+      <SolidColorBrush x:Key="WarningBrush" Color="#F59E0B" />
+      <SolidColorBrush x:Key="SidebarText" Color="#CBD5E1" />
+
+      <conv:MoneyConverter x:Key="Money" />
+      <conv:UnitsConverter x:Key="Units" />
+      <conv:PercentConverter x:Key="Percent" />
+      <conv:DateConverter x:Key="Date" />
+      <conv:PnLBrushConverter x:Key="PnLBrush" />
+      <conv:RebalanceBrushConverter x:Key="RebalanceBrush" />
+      <conv:TransactionTypeBrushConverter x:Key="TxTypeBrush" />
+      <conv:EmotionBrushConverter x:Key="EmotionBrush" />
+      <conv:ToastBrushConverter x:Key="ToastBrush" />
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <StyleInclude Source="/Styles/AppStyles.axaml" />
+  </Application.Styles>
+</Application>

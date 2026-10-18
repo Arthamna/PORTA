@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             xmlns:m="using:Porta.Models"
+             x:Class="Porta.Views.HoldingsView"
+             x:DataType="vm:HoldingsViewModel">
+  <DockPanel Margin="28,24">
+
+    <!-- Toolbar -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="320,12,220,*,Auto" Margin="0,0,0,16">
+      <TextBox Grid.Column="0" Text="{Binding SearchText}" Watermark="Cari ticker atau nama aset..." />
+      <ComboBox Grid.Column="2" ItemsSource="{Binding CategoryOptions}" SelectedItem="{Binding SelectedCategory}" />
+      <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8">
+        <Button Content="Muat Ulang" Command="{Binding RefreshCommand}" />
+        <Button Content="Update Harga" Command="{Binding UpdatePriceCommand}" IsEnabled="{Binding CanEdit}" />
+        <Button Content="Edit" Command="{Binding EditCommand}" IsEnabled="{Binding CanEdit}" />
+        <Button Classes="danger" Content="Hapus" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanEdit}" />
+        <Button Classes="primary" Content="+ Tambah Aset" Command="{Binding AddCommand}" IsEnabled="{Binding CanEdit}" />
+      </StackPanel>
+    </Grid>
+
+    <!-- Totals -->
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,16,*,16,*" Margin="0,16,0,0">
+      <Border Grid.Column="0" Classes="card" Padding="16,12">
+        <StackPanel>
+          <TextBlock Classes="muted" Text="Market Value (hasil filter)" />
+          <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding TotalMarketValue, Converter={StaticResource Money}}" />
+        </StackPanel>
+      </Border>
+      <Border Grid.Column="2" Classes="card" Padding="16,12">
+        <StackPanel>
+          <TextBlock Classes="muted" Text="Modal Diinvestasikan" />
+          <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding TotalInvested, Converter={StaticResource Money}}" />
+        </StackPanel>
+      </Border>
+      <Border Grid.Column="4" Classes="card" Padding="16,12">
+        <StackPanel>
+          <TextBlock Classes="muted" Text="Unrealized P&amp;L" />
+          <TextBlock FontWeight="Bold" FontSize="16"
+                     Text="{Binding TotalUnrealized, Converter={StaticResource Money}, ConverterParameter=signed}"
+                     Foreground="{Binding TotalUnrealized, Converter={StaticResource PnLBrush}}" />
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <Border Classes="card" Padding="8">
+      <Panel>
+        <DataGrid x:CompileBindings="False" ItemsSource="{Binding Holdings}" SelectedItem="{Binding SelectedHolding}">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Ticker" Binding="{Binding TickerSymbol}" FontWeight="SemiBold" Width="105" />
+            <DataGridTextColumn Header="Nama Aset" Binding="{Binding AssetName}" Width="*" MinWidth="110" />
+            <DataGridTemplateColumn Header="Unit" Width="135" SortMemberPath="TotalUnits">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:HoldingDto">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center">
+                    <Run Text="{Binding TotalUnits, Converter={StaticResource Units}}" />
+                    <Run Text="{Binding UnitType}" Foreground="{DynamicResource TextSecondary}" FontSize="11" />
+                  </TextBlock>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Avg Price" Width="155" SortMemberPath="AverageBuyPrice">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:HoldingDto">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center"
+                             Text="{Binding AverageBuyPrice, Converter={StaticResource Money}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Current Price" Width="155" SortMemberPath="CurrentMarketPrice">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:HoldingDto">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center"
+                             Text="{Binding CurrentMarketPrice, Converter={StaticResource Money}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Market Value" Width="150" SortMemberPath="MarketValue">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:HoldingDto">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold"
+                             Text="{Binding MarketValue, Converter={StaticResource Money}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Unrealized P&amp;L" Width="150" SortMemberPath="UnrealizedPnL">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:HoldingDto">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold"
+                             Text="{Binding UnrealizedPnL, Converter={StaticResource Money}, ConverterParameter=signed}"
+                             Foreground="{Binding UnrealizedPnL, Converter={StaticResource PnLBrush}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="P&amp;L %" Width="95" SortMemberPath="UnrealizedPnLPercentage">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:HoldingDto">
+                  <Border Classes="badge" HorizontalAlignment="Right" Margin="0,0,12,0"
+                          Background="{Binding UnrealizedPnLPercentage, Converter={StaticResource PnLBrush}}">
+                    <TextBlock Text="{Binding UnrealizedPnLPercentage, Converter={StaticResource Percent}, ConverterParameter=signed}" />
+                  </Border>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+          <TextBlock Classes="h2" Text="Tidak ada aset" HorizontalAlignment="Center" />
+          <TextBlock Classes="muted" Text="Ubah kata kunci/filter, atau tambahkan aset baru." HorizontalAlignment="Center" />
+        </StackPanel>
+        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" VerticalAlignment="Top" Height="3" MinHeight="3" />
+      </Panel>
+    </Border>
+  </DockPanel>
+</UserControl>

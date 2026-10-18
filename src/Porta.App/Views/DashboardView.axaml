@@ -1,0 +1,174 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             xmlns:m="using:Porta.Models"
+             xmlns:c="using:Porta.Controls"
+             x:Class="Porta.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+  <ScrollViewer>
+    <StackPanel Margin="28,24" Spacing="20">
+
+      <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="3" MinHeight="3" />
+
+      <!-- KPI cards (FR-03) -->
+      <Grid ColumnDefinitions="*,16,*,16,*,16,*">
+        <Border Grid.Column="0" Classes="card">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="muted" Text="TOTAL NET WORTH" FontWeight="SemiBold" />
+            <TextBlock Classes="kpi" Text="{Binding Summary.TotalNetWorth, Converter={StaticResource Money}}" />
+            <TextBlock Classes="muted" Text="Nilai pasar seluruh aset" />
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="2" Classes="card">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="muted" Text="TOTAL MODAL DIINVESTASIKAN" FontWeight="SemiBold" />
+            <TextBlock Classes="kpi" Text="{Binding Summary.TotalInvestedCapital, Converter={StaticResource Money}}" />
+            <TextBlock Classes="muted" Text="Unit × Average Buy Price" />
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="4" Classes="card">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="muted" Text="TOTAL UNREALIZED P&amp;L" FontWeight="SemiBold" />
+            <TextBlock Classes="kpi"
+                       Text="{Binding Summary.TotalUnrealizedPnL, Converter={StaticResource Money}, ConverterParameter=signed}"
+                       Foreground="{Binding Summary.TotalUnrealizedPnL, Converter={StaticResource PnLBrush}}" />
+            <Border Classes="badge" Background="{Binding Summary.TotalUnrealizedPnL, Converter={StaticResource PnLBrush}}">
+              <TextBlock Text="{Binding Summary.TotalUnrealizedPnLPercentage, Converter={StaticResource Percent}, ConverterParameter=signed}" />
+            </Border>
+          </StackPanel>
+        </Border>
+        <Border Grid.Column="6" Classes="card">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="muted" Text="TOTAL REALIZED P&amp;L" FontWeight="SemiBold" />
+            <TextBlock Classes="kpi"
+                       Text="{Binding Summary.TotalRealizedPnL, Converter={StaticResource Money}, ConverterParameter=signed}"
+                       Foreground="{Binding Summary.TotalRealizedPnL, Converter={StaticResource PnLBrush}}" />
+            <TextBlock Classes="muted" Text="Penjualan + dividen/yield" />
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <!-- Empty state (US-01) -->
+      <Border Classes="card" IsVisible="{Binding HasNoData}">
+        <StackPanel Spacing="6" HorizontalAlignment="Center" Margin="0,24">
+          <TextBlock Classes="h2" Text="Portofolio masih kosong" HorizontalAlignment="Center" />
+          <TextBlock Classes="muted" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                     Text="Tambahkan aset di menu Aset &amp; Portofolio, lalu catat transaksi BUY pertama Anda di menu Transaksi." />
+        </StackPanel>
+      </Border>
+
+      <!-- Allocation chart + rebalancing (FR-04) -->
+      <Grid ColumnDefinitions="5*,16,6*" IsVisible="{Binding HasData}">
+        <Border Grid.Column="0" Classes="card">
+          <StackPanel Spacing="16">
+            <TextBlock Classes="h2" Text="Alokasi per Kelas Aset" />
+            <Grid ColumnDefinitions="200,*">
+              <Panel Width="200" Height="200">
+                <c:DonutChart Slices="{Binding Slices}" Thickness="30" TrackBrush="{DynamicResource TrackBrush}" />
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                  <TextBlock Classes="muted" Text="Net Worth" HorizontalAlignment="Center" />
+                  <TextBlock Text="{Binding Summary.TotalNetWorth, Converter={StaticResource Money}}" FontWeight="Bold"
+                             FontSize="13" HorizontalAlignment="Center" />
+                </StackPanel>
+              </Panel>
+              <ItemsControl Grid.Column="1" ItemsSource="{Binding Allocation}" Margin="20,0,0,0" VerticalAlignment="Center">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:AllocationLegendItem">
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,5">
+                      <Border Width="10" Height="10" CornerRadius="3" Background="{Binding Brush}" VerticalAlignment="Center" />
+                      <StackPanel Grid.Column="1" Margin="10,0">
+                        <TextBlock Text="{Binding CategoryName}" FontWeight="Medium" />
+                        <TextBlock Classes="muted" Text="{Binding MarketValue, Converter={StaticResource Money}}" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="2" Text="{Binding ActualPercentage, Converter={StaticResource Percent}}"
+                                 FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="2" Classes="card">
+          <StackPanel Spacing="14">
+            <DockPanel>
+              <Border DockPanel.Dock="Right" Classes="badge" Background="{StaticResource WarningBrush}" IsVisible="{Binding HasAlerts}">
+                <TextBlock Text="{Binding AlertCount, StringFormat='{}{0} perlu rebalancing'}" />
+              </Border>
+              <Border DockPanel.Dock="Right" Classes="badge" Background="{StaticResource ProfitBrush}" IsVisible="{Binding !HasAlerts}">
+                <TextBlock Text="Semua on-track" />
+              </Border>
+              <TextBlock Classes="h2" Text="Status Rebalancing" />
+            </DockPanel>
+            <TextBlock Classes="muted" Text="Aktual vs target alokasi. Toleransi ±5%." />
+            <ItemsControl ItemsSource="{Binding Allocation}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="vm:AllocationLegendItem">
+                  <StackPanel Spacing="5" Margin="0,6">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Right" Classes="badge" Background="{Binding Status, Converter={StaticResource RebalanceBrush}}">
+                        <TextBlock Text="{Binding StatusShort}" />
+                      </Border>
+                      <TextBlock DockPanel.Dock="Right" Margin="0,0,10,0" VerticalAlignment="Center" FontSize="12"
+                                 Text="{Binding Deviation, Converter={StaticResource Percent}, ConverterParameter=signed}"
+                                 Foreground="{Binding Status, Converter={StaticResource RebalanceBrush}}" />
+                      <TextBlock Text="{Binding CategoryName}" FontWeight="Medium" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <ProgressBar Value="{Binding ActualBar}" Maximum="100"
+                                 Foreground="{Binding Status, Converter={StaticResource RebalanceBrush}}" />
+                    <TextBlock Classes="muted">
+                      <Run Text="Aktual" />
+                      <Run Text="{Binding ActualPercentage, Converter={StaticResource Percent}}" />
+                      <Run Text=" · Target" />
+                      <Run Text="{Binding TargetPercentage, Converter={StaticResource Percent}}" />
+                    </TextBlock>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <!-- Last 5 transactions -->
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <TextBlock Classes="h2" Text="5 Transaksi Terakhir" />
+          <TextBlock Classes="muted" Text="Belum ada transaksi." IsVisible="{Binding !HasRecentTransactions}" />
+          <Grid ColumnDefinitions="110,100,*,120,150,160" IsVisible="{Binding HasRecentTransactions}" Margin="0,0,0,4">
+            <TextBlock Grid.Column="0" Classes="label" Text="TANGGAL" />
+            <TextBlock Grid.Column="1" Classes="label" Text="TIPE" />
+            <TextBlock Grid.Column="2" Classes="label" Text="ASET" />
+            <TextBlock Grid.Column="3" Classes="label num" Text="UNIT" />
+            <TextBlock Grid.Column="4" Classes="label num" Text="TOTAL" />
+            <TextBlock Grid.Column="5" Classes="label num" Text="REALIZED P&amp;L" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding RecentTransactions}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="m:Transaction">
+                <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="0,10">
+                  <Grid ColumnDefinitions="110,100,*,120,150,160">
+                    <TextBlock Grid.Column="0" Text="{Binding TransactionDate, Converter={StaticResource Date}}" VerticalAlignment="Center" />
+                    <Border Grid.Column="1" Classes="badge" Background="{Binding TransactionType, Converter={StaticResource TxTypeBrush}}">
+                      <TextBlock Text="{Binding TransactionType}" />
+                    </Border>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding TickerSymbol}" FontWeight="SemiBold" />
+                      <TextBlock Classes="muted" Text="{Binding AssetName}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="3" Classes="num" Text="{Binding Units, Converter={StaticResource Units}}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="4" Classes="num" Text="{Binding TotalAmount, Converter={StaticResource Money}}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="5" Classes="num" VerticalAlignment="Center"
+                               Text="{Binding RealizedPnL, Converter={StaticResource Money}, ConverterParameter=signed}"
+                               Foreground="{Binding RealizedPnL, Converter={StaticResource PnLBrush}}" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

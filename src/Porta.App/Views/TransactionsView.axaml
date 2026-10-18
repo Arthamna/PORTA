@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             xmlns:m="using:Porta.Models"
+             x:Class="Porta.Views.TransactionsView"
+             x:DataType="vm:TransactionsViewModel">
+  <DockPanel Margin="28,24">
+
+    <!-- Filters & actions -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="170,10,170,10,170,10,Auto,*,Auto" Margin="0,0,0,16">
+      <StackPanel Grid.Column="0">
+        <TextBlock Classes="label" Text="Dari Tanggal" />
+        <CalendarDatePicker SelectedDate="{Binding FromDate}" Watermark="Semua" />
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Classes="label" Text="Sampai Tanggal" />
+        <CalendarDatePicker SelectedDate="{Binding ToDate}" Watermark="Semua" />
+      </StackPanel>
+      <StackPanel Grid.Column="4">
+        <TextBlock Classes="label" Text="Tipe Transaksi" />
+        <ComboBox ItemsSource="{Binding TypeOptions}" SelectedItem="{Binding SelectedType}" PlaceholderText="Semua Tipe" />
+      </StackPanel>
+      <Button Grid.Column="6" Content="Reset Filter" Command="{Binding ClearFiltersCommand}" VerticalAlignment="Bottom" />
+      <StackPanel Grid.Column="8" Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
+        <Button Content="Muat Ulang" Command="{Binding RefreshCommand}" />
+        <Button Classes="danger" Content="Hapus Transaksi" Command="{Binding DeleteCommand}" IsEnabled="{Binding CanEdit}" />
+        <Button Classes="primary" Content="+ Catat Transaksi Baru" Command="{Binding NewCommand}" IsEnabled="{Binding CanEdit}" />
+      </StackPanel>
+    </Grid>
+
+    <Border Classes="card" Padding="8">
+      <Panel>
+        <DataGrid x:CompileBindings="False" ItemsSource="{Binding Transactions}" SelectedItem="{Binding SelectedTransaction}">
+          <DataGrid.Columns>
+            <DataGridTemplateColumn Header="Tanggal" Width="125" SortMemberPath="TransactionDate">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <TextBlock Margin="12,0" VerticalAlignment="Center" Text="{Binding TransactionDate, Converter={StaticResource Date}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Tipe" Width="115" SortMemberPath="TransactionType">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <Border Classes="badge" Margin="12,0" Background="{Binding TransactionType, Converter={StaticResource TxTypeBrush}}">
+                    <TextBlock Text="{Binding TransactionType}" />
+                  </Border>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Ticker" Binding="{Binding TickerSymbol}" FontWeight="SemiBold" Width="105" />
+            <DataGridTemplateColumn Header="Unit" Width="*" MinWidth="110" SortMemberPath="Units">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" Text="{Binding Units, Converter={StaticResource Units}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Harga / Unit" Width="150" SortMemberPath="PricePerUnit">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" Text="{Binding PricePerUnit, Converter={StaticResource Money}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Fee" Width="110" SortMemberPath="Fee">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" Text="{Binding Fee, Converter={StaticResource Money}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Total" Width="155" SortMemberPath="TotalAmount">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold"
+                             Text="{Binding TotalAmount, Converter={StaticResource Money}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Realized P&amp;L" Width="150" SortMemberPath="RealizedPnL">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="m:Transaction">
+                  <TextBlock Classes="num" Margin="12,0" VerticalAlignment="Center" FontWeight="SemiBold"
+                             Text="{Binding RealizedPnL, Converter={StaticResource Money}, ConverterParameter=signed}"
+                             Foreground="{Binding RealizedPnL, Converter={StaticResource PnLBrush}}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridCheckBoxColumn Header="Jurnal" Binding="{Binding HasJournal}" Width="80" />
+          </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+          <TextBlock Classes="h2" Text="Tidak ada transaksi" HorizontalAlignment="Center" />
+          <TextBlock Classes="muted" Text="Ubah filter atau catat transaksi baru." HorizontalAlignment="Center" />
+        </StackPanel>
+        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" VerticalAlignment="Top" Height="3" MinHeight="3" />
+      </Panel>
+    </Border>
+  </DockPanel>
+</UserControl>

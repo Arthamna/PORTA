@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Porta.ViewModels"
+             x:Class="Porta.Views.AssetFormView"
+             x:DataType="vm:AssetFormViewModel"
+             Width="520">
+  <StackPanel Margin="24" Spacing="14">
+    <TextBlock Classes="h2" Text="{Binding DialogTitle}" />
+
+    <Grid ColumnDefinitions="*,12,2*">
+      <StackPanel Grid.Column="0">
+        <TextBlock Classes="label" Text="Kode Ticker *" />
+        <TextBox Text="{Binding Ticker}" Watermark="BBCA" MaxLength="20" />
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Classes="label" Text="Nama Aset *" />
+        <TextBox Text="{Binding AssetName}" Watermark="Bank Central Asia Tbk" MaxLength="100" />
+      </StackPanel>
+    </Grid>
+
+    <Grid ColumnDefinitions="*,12,*">
+      <StackPanel Grid.Column="0">
+        <TextBlock Classes="label" Text="Kategori Kelas Aset *" />
+        <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" />
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Classes="label" Text="Satuan Unit *" />
+        <AutoCompleteBox Text="{Binding UnitType}" ItemsSource="{Binding UnitTypeSuggestions}" FilterMode="StartsWith" Watermark="Lembar" />
+      </StackPanel>
+    </Grid>
+
+    <StackPanel>
+      <TextBlock Classes="label" Text="Harga Pasar Saat Ini (Rp) *" />
+      <TextBox Text="{Binding PriceText}" Watermark="contoh: 9800 atau 0,5" HorizontalContentAlignment="Right" />
+    </StackPanel>
+
+    <TextBlock Classes="muted" TextWrapping="Wrap" IsVisible="{Binding !IsEdit}"
+               Text="Unit dan Average Buy Price dimulai dari 0 dan dihitung otomatis dari transaksi BUY/SELL." />
+
+    <Border Classes="inlineError" IsVisible="{Binding HasError}">
+      <TextBlock Classes="error" Text="{Binding ErrorMessage}" />
+    </Border>
+
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button Content="Batal" Command="{Binding CancelCommand}" IsCancel="True" />
+      <Button Classes="primary" Content="Simpan" Command="{Binding SaveCommand}" IsDefault="True" />
+    </StackPanel>
+  </StackPanel>
+</UserControl>
