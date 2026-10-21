@@ -2,6 +2,8 @@
 
 ## 1. Deskripsi dan ruang lingkup fitur aplikasi desktop
 
+![](image.png)
+
 **PORTA (Portfolio & Multi-Asset Investment Journal System)** adalah aplikasi desktop untuk mengelola, memantau, dan mengevaluasi portofolio investasi pribadi dalam satu tempat. Aplikasi mencakup saham, kripto, reksa dana/obligasi, emas, dan kas, serta dikembangkan menggunakan C#, .NET 8, Avalonia UI, dan SQL Server.
 
 Ruang lingkup fiturnya meliputi:
@@ -19,4 +21,7 @@ Ruang lingkup fiturnya meliputi:
 
 **Manfaat:** PORTA memusatkan pencatatan investasi, mempercepat pemantauan kinerja, dan mengurangi kesalahan perhitungan manual. Grafik serta indikator alokasi membantu pengguna menjaga komposisi aset sesuai target, sedangkan jurnal membantu mengevaluasi strategi dan membangun kedisiplinan dalam mengambil keputusan investasi.
 
-*Sumber: README.md dan PRD PORTA, bagian 1, 2, 4, dan 5.1.*
+
+## 3. Poster
+
+![](PORTA_infographic.png)
